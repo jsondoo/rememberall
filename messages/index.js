@@ -15,8 +15,9 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 
 /* GLOBAL VARIABLES */
-
 var initialResponse = "";
+var thingToAdd = "";
+var addDescription = "";
 
 bot.dialog('/', [
     function (session, args, next) {
@@ -49,19 +50,40 @@ bot.dialog('/', [
 ]);
 
 bot.dialog('/remember', [
-	function(session) { // GET request
-		session.send('In remember dialog');
+	function(session) { 
+		builder.Prompts.text(session, 'What are you trying to remember?');
+    },
+    function (session, results){
+		// TODO send POST request with
+		// userID, thingToRemember
+		var thingToRemember = results.response;
+		var userID = session.message.user.id;	
+		session.send('Your user ID is ' + userID);
+		session.send('Searching for ' + thingToRemember);
+
 		session.endDialog();
 	}
 ]);
 
 bot.dialog('/add', [
-	function(session) { // POST request
-		session.send('In add dialog');
-		session.send('http://i.imgur.com/320J4Wi.png');
+	function(session) { 
+		builder.Prompts.text(session, 'What would you like to add?');
+	},
+	function (session, results){
+		thingToAdd = results.response;
+		builder.Prompts.text(session, 'Can you please describe what ' + thingToAdd + ' is?');
+	},
+	function (session, results){
+		addDescription = results.response;
+
+		// TODO send POST request with
+		// userID, thingToAdd, add Description
+		var userID = session.message.user.id;	
+		session.send('Your user ID is ' + userID);
+		session.send(thingToAdd + ': ' + addDescription);
+		
 		session.endDialog();
 	}
-
 ]);
 
 bot.dialog('/firstPrompt', [

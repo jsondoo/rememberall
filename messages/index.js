@@ -2,7 +2,7 @@
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var request = require('request');
-
+//require('request-debug')(request);
 /* REMEMBER TO CHANGE THIS LINE ON THE PORTAL */
 var useEmulator = true; ///(process.env.NODE_ENV == 'development');
  
@@ -16,6 +16,9 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 
  
+
+
+
 
 
 /* GLOBAL VARIABLES */
@@ -71,29 +74,52 @@ bot.dialog('/remember', [
     function (session, results){
         var thingToRemember = results.response;
         var userID = session.message.user.id;
-        
+        userID = "123";
         // POST request 
         var data = {
             "user": userID,
             "query":thingToRemember
         };
-        var addUrl = url + 'remember';
+        var rememberUrl = url + 'remember';
+
         var callback = function(err, response, body) {
             console.log("Callback");
             console.log(err);
-            // console.log(response);
-            var parsedData = JSON.parse(body);
-            var descriptionReturned = parsedData[0].description;
-            var contentReturned = parsedData[0].content;
-            console.log(body);
+            console.log("Body: " + body);
+            var parsedBody = JSON.parse(body);
+            console.log(parsedBody.description);
+            console.log(parsedBody.content);
 
+            var description = parsedBody.description;
+            var content = parsedBody.content;
 
             session.send("This is the best match I found 🍻");
-            session.send("Description: " + JSON.stringify(descriptionReturned));
-            session.send("Content: " + JSON.stringify(contentReturned));
+            session.send("Description: " + description);
+            session.send("Content: " + content);
+            // console.log(response);
+            // console.log(body);
             session.endDialog();
         }; 
-        request.post(addUrl, {form: data}, callback);
+        // var callback = function(err, response, body) {
+        //     console.log("Callback");
+        //     console.log(err);
+        //     //console.log(response);
+        //     var parsedData = body;
+        //     console.log('BODY' + body);
+
+        //     if(parsedData.description !== undefined){
+        //     var descriptionReturned = parsedData[0].description;
+        //     var contentReturned = parsedData[0].content;
+        //     console.log(body);
+        //     }
+
+
+        //     session.send("This is the best match I found 🍻");
+        //     session.send("Description: " + JSON.stringify(descriptionReturned));
+        //     session.send("Content: " + JSON.stringify(contentReturned));
+        //     session.endDialog();
+        // }; 
+        request.post(rememberUrl, {form: data}, callback);
     }
 ]);
  
@@ -110,6 +136,8 @@ bot.dialog('/add', [
         thingToAdd = results.response;
         var userID = session.message.user.id; 
         
+
+        userID = "123";
         // POST request 
         var data = {
             "user": userID,

@@ -15,6 +15,7 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 
 /* GLOBAL VARIABLES */
+
 var initialResponse = "";
 
 bot.dialog('/', [

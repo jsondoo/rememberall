@@ -42,7 +42,7 @@ bot.dialog('/button', [
         .buttons([
             builder.CardAction.dialogAction(session, "help", 'help', 'What are you?'),
             builder.CardAction.dialogAction(session, "remember",'remember','Remember something!'),
-            builder.CardAction.dialogAction(session, "add",'add','Add something new!')
+            builder.CardAction.dialogAction(session, "add",'add','Create new memory!')
         ]);
  
         var msg = new builder.Message(session).addAttachment(card);
@@ -88,7 +88,7 @@ bot.dialog('/remember', [
             console.log(body);
 
 
-            session.send("Is this what you were trying to remember?");
+            session.send("This is the best match I found 🍻");
             session.send("Description: " + JSON.stringify(descriptionReturned));
             session.send("Content: " + JSON.stringify(contentReturned));
             session.endDialog();
@@ -99,17 +99,16 @@ bot.dialog('/remember', [
  
 bot.dialog('/add', [
     function(session) {
-        builder.Prompts.text(session, 'Can you please describe what you would like to add?');
+        builder.Prompts.text(session, 'What do you want to remember?');
     },
     function (session, results){
         addDescription = results.response;
         // TODO reword this?
-        builder.Prompts.text(session, 'What would you like to remember ' + session.userData.name + ' ?');
+        builder.Prompts.text(session, 'Tell me the data you want to remember, ' + session.userData.name + '.');
     },
     function (session, results){        
         thingToAdd = results.response;
-        var userID = session.message.user.id;  
-        session.send(thingToAdd + ': ' + addDescription);
+        var userID = session.message.user.id; 
         
         // POST request 
         var data = {

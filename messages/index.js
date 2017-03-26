@@ -51,6 +51,7 @@ bot.dialog('/button', [
     }
 ]);
 
+// button dialogs
 bot.beginDialogAction('remember', '/remember');
 bot.beginDialogAction('add', '/add');
 bot.beginDialogAction('help', '/help');
@@ -102,6 +103,7 @@ bot.dialog('/add', [
     },
     function (session, results){
         addDescription = results.response;
+        // TODO reword this?
         builder.Prompts.text(session, 'What would you like to remember ' + session.userData.name + ' ?');
     },
     function (session, results){        

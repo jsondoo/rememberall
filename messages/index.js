@@ -39,10 +39,10 @@ bot.dialog('/button', [
     function (session, results){
         msg='';
         var card = new builder.HeroCard(session)
-        .title('Options')
+        .title('Choose what you want to do 🤔')
         .buttons([
-            builder.CardAction.dialogAction(session, "remember",'remember','remember'),
-            builder.CardAction.dialogAction(session, "add",'add','add')
+            builder.CardAction.dialogAction(session, "remember",'remember','Remember something!'),
+            builder.CardAction.dialogAction(session, "add",'add','Add something new!')
         ]);
  
         var msg = new builder.Message(session).addAttachment(card);
@@ -50,6 +50,7 @@ bot.dialog('/button', [
         session.endDialog();
     }
 ]);
+
 bot.beginDialogAction('remember', '/remember');
 bot.beginDialogAction('add', '/add');
  
@@ -63,8 +64,7 @@ bot.dialog('/remember', [
         // userID, thingToRemember
         var thingToRemember = results.response;
         var userID = session.message.user.id;  
-        session.send('Your user ID is ' + userID);
-        session.send('Searching for ' + thingToRemember);
+        session.send('Searching for ' + thingToRemember + ' ...');
         
         var data = {
             "user": userID,
@@ -81,13 +81,13 @@ bot.dialog('/remember', [
             console.log(body);
 
 
-            session.send("Is this waht you were trying to remember?");
+            session.send("Is this what you were trying to remember?");
             session.send("Description: " + JSON.stringify(descriptionReturned));
             session.send("Content: " + JSON.stringify(contentReturned));
             session.endDialog();
         }; 
-        console.log("Data is:");
-        console.log(data);
+        // console.log("Data is:");
+        // console.log(data);
         request.post(addUrl, {form: data}, callback);
     }
 ]);
@@ -124,6 +124,8 @@ bot.dialog('/add', [
         console.log("Data is:");
         console.log(data);
         request.post(addUrl, {form: data}, callback);
+
+        session.send("Thanks! I will keep that in mind 🙌");
     }
 ]);
  

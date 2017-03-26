@@ -17,9 +17,12 @@ var bot = new builder.UniversalBot(connector);
 /* GLOBAL VARIABLES */
 var initialResponse = "";
 
-
 bot.dialog('/', [
     function (session, args, next) {
+    	if(session.message.text === 'delete'){ // command for resetting name
+    		session.userData.name = 0;
+    	}
+
         if (!session.userData.name) {        // session property
             session.beginDialog('/profile'); // initialize's userData.name
         } else {
@@ -33,20 +36,30 @@ bot.dialog('/', [
     function (session, results, next){
     	initialResponse = results.response.toLowerCase();
     	if(initialResponse.includes('remember')){
-    		session.send('remember block');
+    		session.beginDialog('/remember');
     	}
     	else if(initialResponse.includes('add')){
-    		session.send('add block');
+    		session.beginDialog('/add');
     	}
     	else{
-    		session.send('I don\'t recognize your command...');
-    		return;
+    		session.send('Sorry, ' + session.userData.name + ' I don\'t recognize your command 😥');
     	}
-    	next();
-    },
-    function(session,results){
-    	session.send('I am here now');
     }
+]);
+
+bot.dialog('/remember', [
+	function(session) { // GET request
+		session.send('In remember dialog');
+		session.endDialog();
+	}
+]);
+
+bot.dialog('/add', [
+	function(session) { // POST request
+		session.send('In add dialog');
+		session.send('http://i.imgur.com/320J4Wi.png');
+		session.endDialog();
+	}
 
 ]);
 

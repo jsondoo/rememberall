@@ -16,6 +16,8 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 
  
+
+
 /* GLOBAL VARIABLES */
 var initialResponse = "";
 var thingToAdd = "";
@@ -24,9 +26,6 @@ var url = 'http://rememberall17.azurewebsites.net/api/';
 
 bot.dialog('/', [
     function (session, args, next) {
-        // if(session.message.text === 'delete'){
-        //  session.userData.name = 0;
-        // }
         session.beginDialog('/profile'); // initialize's userData.name with facebook name                    
     },
     function (session, results, next) {
@@ -41,6 +40,7 @@ bot.dialog('/button', [
         var card = new builder.HeroCard(session)
         .title('Choose what you want to do 🤔')
         .buttons([
+            builder.CardAction.dialogAction(session, "help", 'help', 'What are you?'),
             builder.CardAction.dialogAction(session, "remember",'remember','Remember something!'),
             builder.CardAction.dialogAction(session, "add",'add','Add something new!')
         ]);
@@ -53,19 +53,25 @@ bot.dialog('/button', [
 
 bot.beginDialogAction('remember', '/remember');
 bot.beginDialogAction('add', '/add');
+bot.beginDialogAction('help', '/help');
+
+bot.dialog('/help', [
+    function(session){
+        session.send("My name is Rememberall! I am your personal bot that is here to help you remember anything you want - academic related, event reminders, etc."
+            + " Click on one of the other buttons to try me 😇");
+          session.endDialog();
+    }
+]);
  
 bot.dialog('/remember', [
     function(session) {
         builder.Prompts.text(session, 'What are you trying to remember, ' + session.userData.name + ' ?');
     },
     function (session, results){
-
-        // TODO send POST request with
-        // userID, thingToRemember
         var thingToRemember = results.response;
-        var userID = session.message.user.id;  
-        session.send('Searching for ' + thingToRemember + ' ...');
+        var userID = session.message.user.id;
         
+        // POST request 
         var data = {
             "user": userID,
             "query":thingToRemember
@@ -86,8 +92,6 @@ bot.dialog('/remember', [
             session.send("Content: " + JSON.stringify(contentReturned));
             session.endDialog();
         }; 
-        // console.log("Data is:");
-        // console.log(data);
         request.post(addUrl, {form: data}, callback);
     }
 ]);
@@ -102,12 +106,10 @@ bot.dialog('/add', [
     },
     function (session, results){        
         thingToAdd = results.response;
-        // TODO send POST request with
-        // userID, thingToAdd, add Description
         var userID = session.message.user.id;  
-        session.send('Your user ID is ' + userID);
         session.send(thingToAdd + ': ' + addDescription);
         
+        // POST request 
         var data = {
             "user": userID,
             "description": addDescription,
@@ -126,21 +128,11 @@ bot.dialog('/add', [
         request.post(addUrl, {form: data}, callback);
 
         session.send("Thanks! I will keep that in mind 🙌");
+        session.endDialog();
     }
 ]);
  
-// bot.dialog('/firstPrompt', [
-//  function (session) {
-       
-//  },
-//  function (session, results){  // not necessary to do this
-//      session.endDialogWithResult(results);
-//  }
- 
-// ]);
- 
- 
-// initialize session.userData.name with facebook name
+
 bot.dialog('/profile', [
     function (session) {
         var fbName = session.message.user.name;
